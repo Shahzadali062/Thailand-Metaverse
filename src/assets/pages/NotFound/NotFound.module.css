@@ -1,0 +1,27 @@
+.wrap{
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
+}
+.card{
+  width: min(640px, 100%);
+  padding: 20px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.h1{ margin:0; font-weight: 1000; }
+.p{ margin: 10px 0 0; color: var(--muted); font-weight: 800; }
+.btn{
+  display:inline-flex;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.03);
+  font-weight: 1000;
+}
+.btn:hover{ background: rgba(255,255,255,.06); }
