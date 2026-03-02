@@ -27,7 +27,7 @@ export default function Home(){
           <div className={styles.aboutGrid}>
             <div className={styles.card}>
               <p className={styles.p}>
-                Thailand Metaverse is a one-day hybrid event focused on immersive technology and digital innovation.
+                Thailand Metaverse is a one day hybrid event focused on immersive technology and digital innovation.
                 Expect keynotes, live demos, and hands-on sessions across education, tourism, culture, and business.
               </p>
               <div className={styles.tags}>
