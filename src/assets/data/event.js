@@ -21,7 +21,7 @@ export const event = {
     { time: "17:30", title: "Closing + Certificates", note: "Photos, next steps, announcements" },
   ],
   faq: [
-    { q: "Is it online or in-person?", a: "Hybrid — attend in Bangkok or join the livestream." },
+    { q: "Online or in-person?", a: "Hybrid or attend in Bangkok or join the livestream." },
     { q: "Will I get a certificate?", a: "Yes, digital certificates for registered participants." },
     { q: "Can students join?", a: "Yes. Student tickets are available." },
   ],
