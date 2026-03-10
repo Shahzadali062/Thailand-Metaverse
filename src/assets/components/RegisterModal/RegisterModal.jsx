@@ -1,14 +1,19 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./RegisterModal.module.css";
 
-export default function RegisterModal({ open, onClose, eventName }){
-  const [done, setDone] = useState(false);
+const TICKET_OPTIONS = ["General", "Student", "VIP", "Online Pass"];
 
-  function submit(e){
+export default function RegisterModal({ open, onClose, eventName }) {
+  const [done, setDone] = useState(false);
+  const [ticket, setTicket] = useState("Student");
+
+  function submit(e) {
     e.preventDefault();
     setDone(true);
     e.target.reset();
+    setTicket("Student");
+
     setTimeout(() => {
       setDone(false);
       onClose();
@@ -38,14 +43,30 @@ export default function RegisterModal({ open, onClose, eventName }){
                 <div className={styles.title}>Register</div>
                 <div className={styles.sub}>for {eventName}</div>
               </div>
-              <button className={styles.close} onClick={onClose}>✕</button>
+
+              <button
+                type="button"
+                className={styles.close}
+                onClick={onClose}
+                aria-label="Close register modal"
+              >
+                ✕
+              </button>
             </div>
 
             <form className={styles.form} onSubmit={submit}>
               <Field label="Full Name" name="name" required />
               <Field label="Email" name="email" type="email" required />
               <Field label="Phone (optional)" name="phone" />
-              <Select label="Ticket Type" name="ticket" options={["General","Student","VIP","Online Pass"]} />
+
+              <CustomSelect
+                label="Ticket Type"
+                name="ticket"
+                options={TICKET_OPTIONS}
+                value={ticket}
+                onChange={setTicket}
+              />
+
               <Textarea label="What do you want to learn?" name="message" />
 
               <button className={styles.btn} type="submit">
@@ -61,7 +82,7 @@ export default function RegisterModal({ open, onClose, eventName }){
   );
 }
 
-function Field({ label, ...props }){
+function Field({ label, ...props }) {
   return (
     <label className={styles.field}>
       <span className={styles.label}>{label}</span>
@@ -69,7 +90,8 @@ function Field({ label, ...props }){
     </label>
   );
 }
-function Textarea({ label, ...props }){
+
+function Textarea({ label, ...props }) {
   return (
     <label className={styles.field}>
       <span className={styles.label}>{label}</span>
@@ -77,13 +99,85 @@ function Textarea({ label, ...props }){
     </label>
   );
 }
-function Select({ label, options, ...props }){
+
+function CustomSelect({ label, name, options, value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+
+    function handleEscape(e) {
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  function choose(option) {
+    onChange(option);
+    setOpen(false);
+  }
+
   return (
-    <label className={styles.field}>
+    <div className={styles.field}>
       <span className={styles.label}>{label}</span>
-      <select className={styles.select} {...props}>
-        {options.map((o) => <option key={o} value={o}>{o}</option>)}
-      </select>
-    </label>
+
+      <div className={styles.ddWrap} ref={wrapRef}>
+        <input type="hidden" name={name} value={value} />
+
+        <button
+          type="button"
+          className={styles.ddButton}
+          onClick={() => setOpen((prev) => !prev)}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+        >
+          <span className={styles.ddValue}>{value}</span>
+          <span className={`${styles.ddChevron} ${open ? styles.ddChevronOpen : ""}`}>
+            ▾
+          </span>
+        </button>
+
+        <AnimatePresence>
+          {open && (
+            <motion.div
+              className={styles.ddList}
+              role="listbox"
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+              transition={{ duration: 0.16, ease: "easeOut" }}
+            >
+              {options.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  className={`${styles.ddItem} ${option === value ? styles.ddActive : ""}`}
+                  onClick={() => choose(option)}
+                  role="option"
+                  aria-selected={option === value}
+                >
+                  <span>{option}</span>
+                  {option === value && <span className={styles.ddCheck}>✓</span>}
+                </button>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }
